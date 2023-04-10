@@ -73,6 +73,10 @@ class Agent:
         self.messages.append({"role": role, "content": content})
 
     def get_chat_log(self) -> list:
+        """
+        Get the chat log.
+        :return: The chat log.
+        """
         return self.messages
 
     def generate_one_shot(self, user_input: str) -> str:
