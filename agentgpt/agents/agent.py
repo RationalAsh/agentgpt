@@ -36,6 +36,18 @@ class Agent:
                  n: int = 1,
                  stop: list = None,
                  system_prompt: str = DEFAULT_SYSTEM_PROMPT):
+        """
+        Initialize the agent.
+        :param api_key: OpenAI API key
+        :param organization_id: OpenAI organization ID
+        :param model: OpenAI model
+        :param max_tokens: The maximum number of tokens to generate.
+        :param temperature: Model temperature.
+        :param top_p: Model top_p parameter.
+        :param n: Number of responses to generate.
+        :param stop: List of tokens to stop generating on.
+        :param system_prompt: The system prompt.
+        """
         self.api_key = api_key
         self.organization_id = organization_id
         self.system_prompt = system_prompt
@@ -52,12 +64,49 @@ class Agent:
         openai.organization = self.organization_id
 
     def add_message(self, role: Role, content: str) -> None:
+        """
+        Add a message to the chat log.
+        :param role: The role of the message.
+        :param content: The content of the message.
+        :return: None
+        """
         self.messages.append({"role": role, "content": content})
 
     def get_chat_log(self) -> list:
         return self.messages
 
+    def generate_one_shot(self, user_input: str) -> str:
+        """
+        Generate a one-shot response to the user input without
+        adding the user input to the chat log.
+        :param user_input: The user input
+        :return: The generated response
+        """
+
+        # Generate a response using the OpenAI OneShotCompletion API
+        response = openai.ChatCompletion.create(
+            model=self.model,
+            prompt=[
+                {"role": "system", "content": self.system_prompt},
+                *self.messages,
+            ],
+            max_tokens=self.max_tokens,
+            temperature=self.temperature,
+            top_p=self.top_p,
+            stop=self.stop,
+        )
+
+        # Extract the response text from the API response
+        response_text = response.choices[0]["message"]["content"]
+
+        return response_text
+
     def generate_response(self, user_input: str) -> str:
+        """
+        Generate a response to the user input and add the user input
+        :param user_input: The user input
+        :return: The generated response
+        """
         self.add_message(Role.USER, user_input)
 
         # Generate a response using the OpenAI ChatCompletion API
