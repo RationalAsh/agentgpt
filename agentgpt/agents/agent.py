@@ -92,7 +92,7 @@ class Agent:
             model=self.model,
             prompt=[
                 {"role": "system", "content": self.system_prompt},
-                *self.messages,
+                {"role": "user", "content": user_input}
             ],
             max_tokens=self.max_tokens,
             temperature=self.temperature,
