@@ -1,1 +1,3 @@
 openai
+PyPDF2
+pdfminer.six

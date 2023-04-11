@@ -3,7 +3,8 @@ Base class for agents.
 """
 import openai
 import os
-from enum import Enum, StrEnum
+from enum import Enum
+import logging
 
 DEFAULT_SYSTEM_PROMPT = """
 You are a helpful assistant that can answer questions about anything.
@@ -13,7 +14,7 @@ DEFAULT_MODEL = "gpt-3.5-turbo"
 
 
 # A StrEnum for all the possible roles in a conversation
-class Role(StrEnum):
+class Role(str, Enum):
     # System
     SYSTEM = "system"
     # User
@@ -30,7 +31,7 @@ class Agent:
                  api_key: str = os.environ.get("OPENAI_API_KEY"),
                  organization_id: str = os.environ.get("OPENAI_ORGANIZATION"),
                  model: str = DEFAULT_MODEL,
-                 max_tokens: int = 4096,
+                 max_tokens: int = 2048,
                  temperature: float = 0.5,
                  top_p: float = 1.0,
                  n: int = 1,
@@ -63,6 +64,20 @@ class Agent:
         openai.api_key = self.api_key
         openai.organization = self.organization_id
 
+        # Set up logging
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+        # Add a handler to log to a file
+        handler = logging.StreamHandler()
+        # Add a formatter to the handler
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        self.logger.addHandler(handler)
+        # Set a prefix for all log messages
+
+        # Log the agent configuration
+        self.logger.info("Initializing agent...")
+        self.logger.info(f"Agent configuration: {self.__dict__}")
+
     def add_message(self, role: Role, content: str) -> None:
         """
         Add a message to the chat log.
@@ -90,7 +105,7 @@ class Agent:
         # Generate a response using the OpenAI OneShotCompletion API
         response = openai.ChatCompletion.create(
             model=self.model,
-            prompt=[
+            messages=[
                 {"role": "system", "content": self.system_prompt},
                 {"role": "user", "content": user_input}
             ],
@@ -116,7 +131,7 @@ class Agent:
         # Generate a response using the OpenAI ChatCompletion API
         response = openai.ChatCompletion.create(
             model=self.model,
-            prompt=[
+            messages=[
                 {"role": "system", "content": self.system_prompt},
                 *self.messages,
             ],

@@ -5,6 +5,7 @@ A summarizer agent.
 from typing import List
 from agentgpt.agents.agent import *
 import argparse
+from pdfminer.high_level import extract_text
 
 SUMMARIZER_SYSTEM_PROMPT = """
 You are a summarizer that can summarize any text. Your goal is to keep 
@@ -21,7 +22,7 @@ class Summarizer(Agent):
                  api_key: str = os.environ.get("OPENAI_API_KEY"),
                  organization_id: str = os.environ.get("OPENAI_ORGANIZATION"),
                  model: str = DEFAULT_MODEL,
-                 max_tokens: int = 4096,
+                 max_tokens: int = 2048,
                  temperature: float = 0.5,
                  top_p: float = 1.0,
                  n: int = 1,
@@ -66,5 +67,24 @@ if __name__ == '__main__':
     # Parse arguments
     parser = argparse.ArgumentParser()
 
-    # Text file to summarize
-    parser.add_argument("--text_file", type=str, required=True, help="Text file to summarize.")
+    # Specify that two arguments are mutually exclusive
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument("--text_file", type=str, help="Text file to summarize.")
+    group.add_argument("--pdf_file", type=str, help="PDF file to summarize.")
+
+    # Parse arguments
+    args = parser.parse_args()
+
+    # Initialize summarizer
+    summarizer = Summarizer()
+
+    # Summarize text
+    if args.text_file:
+        with open(args.text_file, "r") as f:
+            text = f.read()
+    else:
+        text = extract_text(args.pdf_file)
+
+    # print(text)
+    summary = summarizer.summarize(text)
+    print(summary)
