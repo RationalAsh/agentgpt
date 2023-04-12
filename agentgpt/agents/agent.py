@@ -148,3 +148,32 @@ class Agent:
         self.add_message(Role.ASSISTANT, response_text)
 
         return response_text
+
+    def ask_once(self, system_prompt: str, user_prompt: str) -> str:
+        """
+        Ask once.
+        :param system_prompt: The system prompt.
+        :param user_prompt: The user prompt.
+        :return: The response.
+        """
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+
+        # Generate a response using the OpenAI ChatCompletion API
+        response = openai.ChatCompletion.create(
+            model=self.model,
+            messages=messages,
+            max_tokens=self.max_tokens,
+            n=self.n,
+            stop=self.stop,
+            temperature=self.temperature,
+        )
+
+        # Extract the response text from the API response
+        response_text = response.choices[0]["message"]["content"]
+
+        return response_text
+
