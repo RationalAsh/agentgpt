@@ -151,7 +151,9 @@ class Agent:
 
     def ask_once(self, system_prompt: str, user_prompt: str) -> str:
         """
-        Ask once.
+        Generate a single response from the OpenAI ChatCompletion API
+        given the system prompt and user prompt.
+        
         :param system_prompt: The system prompt.
         :param user_prompt: The user prompt.
         :return: The response.
