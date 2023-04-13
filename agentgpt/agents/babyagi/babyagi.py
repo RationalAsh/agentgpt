@@ -106,15 +106,23 @@ class BabyAGI(Agent):
         Execute the tasks.
         :return:
         """
+        tool_descriptions = '\n'.join([f"{t}" for t in self.tools])
         system_prompt = f"""
         You are task execution agent that systematically carries out 
         tasks to the best of your ability so as to achieve a stated objective.
+        
+        If a task requires precise outputs or inputs, you can make use of commands
+        to help you execute the task. Output the command and arguments as specified
+        by the tool descriptions to use the tool.
         """
         user_prompt = f"""
         Objective: {self.objective}
         Current Task: {task}
         
-        Think throught this step by step. Show your thinking process first
+        Tools Available:
+        {tool_descriptions}
+        
+        Think through this step by step. Show your thinking process first
         under a heading called "Thinking Process" and then show the result
         under a heading called "Result".
         """
@@ -128,8 +136,8 @@ class BabyAGI(Agent):
 
 
 if __name__ == '__main__':
-    babyagi = BabyAGI(objective="Purchase airpods and send it to this address: 1234 Main St.",
+    babyagi = BabyAGI(objective="Add the numbers in this list: 3.141, 11.5, 11.5, 11.5, 11.5.",
                       task_description="Create a list of tasks to achieve the objective.",
                       task_list=INITIAL_TASK_LIST)
 
-    print(babyagi.execute_task("Create a list of tasks to achieve this objective."))
+    print(babyagi.execute_task("Add the numbers."))

@@ -59,6 +59,7 @@ class Agent:
         self.n = n
         self.stop = stop
         self.messages = []
+        self.tools=[]
 
         # Initialize OpenAI API
         openai.api_key = self.api_key
@@ -77,6 +78,17 @@ class Agent:
         # Log the agent configuration
         self.logger.info("Initializing agent...")
         self.logger.info(f"Agent configuration: {self.__dict__}")
+
+        # Add the calculator tool to the agent
+        self.add_tool(CalculatorTool())
+
+    def add_tool(self, tool) -> None:
+        """
+        Add a tool to the agent.
+        :param tool: The tool to add.
+        :return: None
+        """
+        self.tools.append(tool)
 
     def add_message(self, role: Role, content: str) -> None:
         """
@@ -153,7 +165,7 @@ class Agent:
         """
         Generate a single response from the OpenAI ChatCompletion API
         given the system prompt and user prompt.
-        
+
         :param system_prompt: The system prompt.
         :param user_prompt: The user prompt.
         :return: The response.
@@ -179,3 +191,69 @@ class Agent:
 
         return response_text
 
+
+class AgentTool(object):
+    """
+    A tool that the agent can use to help it generate responses.
+    """
+    def __init__(self, command: str,
+                 description: str,
+                 usage: str):
+        """
+        Initialize the agent tool.
+        :param command: The command to run the tool.
+        :param description: A description of the tool.
+        :param usage: A usage example of the tool.
+        """
+        self.command = command
+        self.description = description
+        self.usage = usage
+
+    def __str__(self):
+        """
+        Return a string representation of the tool.
+        :return: A string representation of the tool.
+        """
+        out = f"{self.command} - {self.description}\n\n"
+        out += f"Usage Instructions:\n {self.usage}"
+
+        return out
+
+    def run(self, tool_input: str) -> str:
+        """
+        Run the tool.
+        :param tool_input: The user input.
+        :return: The tool's response.
+        """
+        raise NotImplementedError("The run method must be implemented by the tool.")
+
+
+class CalculatorTool(AgentTool):
+    """
+    A tool that the agent can use to help evaluate arithmetic expressions.
+    """
+    def __init__(self):
+        """
+        Initialize the calculator tool.
+        """
+        self.command = "/calculate"
+        self.description = "Evaluates the result of mathematical expressions."
+        self.description += " If you want to add, subtract, multiply, or divide numbers, use this command."
+        self.description += "instead of trying to do it yourself. Place this command at the last line of your output."
+        self.description += "Do not attempt to calculate the expression yourself."
+        self.usage = "Adding numbers: /calculate 2 + 2 + 3"
+        self.usage += "Subtracting numbers: /calculate 2 - 2 - 3"
+        self.usage += "Multiplying numbers: /calculate 2 * 2 * 3"
+        self.usage += "Dividing numbers: /calculate 2 / 2 / 3"
+
+    def run(self, tool_input: str) -> str:
+        """
+        Evaluate an arithmetic expression.
+        :param tool_input: The input to evaluate.
+        :return: The result of the evaluation.
+        """
+        # Evaluate the expression
+        return str(eval(tool_input))
+
+
+# class PythonEvaluatorTool()
