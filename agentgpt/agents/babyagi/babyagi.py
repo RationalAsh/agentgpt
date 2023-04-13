@@ -108,8 +108,8 @@ class BabyAGI(Agent):
         """
         tool_descriptions = '\n'.join([f"{t}" for t in self.tools])
         system_prompt = f"""
-        You are task execution agent that systematically carries out 
-        tasks to the best of your ability so as to achieve a stated objective.
+        You are task execution agent that systematically carries out the current task
+        to the best of your ability so as to achieve a stated objective.
         
         If a task requires precise outputs or inputs, you can make use of commands
         to help you execute the task. Output the command and arguments as specified
@@ -123,8 +123,9 @@ class BabyAGI(Agent):
         {tool_descriptions}
         
         Think through this step by step. Show your thinking process first
-        under a heading called "Thinking Process" and then show the result
-        under a heading called "Result".
+        under a heading called "Thinking Process". If you need the output from a tool,
+        use the appropriate tool commands and place it under the heading "Actions" and wait 
+        for a reply. Do not output anything else until you get a reply.
         """
 
         self.logger.info("Executing task: %s", task)
@@ -140,4 +141,9 @@ if __name__ == '__main__':
                       task_description="Create a list of tasks to achieve the objective.",
                       task_list=INITIAL_TASK_LIST)
 
-    print(babyagi.execute_task("Add the numbers."))
+    resp = babyagi.execute_task("Add the numbers.")
+    i = resp.find('/calculate')
+    if i != -1:
+        j = resp.find('\n', i)
+
+    print(resp)
