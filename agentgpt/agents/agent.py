@@ -254,6 +254,3 @@ class CalculatorTool(AgentTool):
         """
         # Evaluate the expression
         return str(eval(tool_input))
-
-
-# class PythonEvaluatorTool()
