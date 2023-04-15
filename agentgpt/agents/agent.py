@@ -227,6 +227,20 @@ class AgentTool(object):
         """
         raise NotImplementedError("The run method must be implemented by the tool.")
 
+class PythonEvalTool(AgentTool):
+    """
+    A tool that the agent can use to help evaluate Python expressions.
+    """
+    def __init__(self):
+        """
+        Initialize the Python eval tool.
+        """
+        self.command = "python"
+        self.description = "Evaluates the result of Python expressions."
+        self.description += " If you want to evaluate Python expressions, use this command."
+        self.description += "instead of trying to do it yourself. Place this command at the last line of your output."
+        self.description += "Do not attempt to evaluate the expression yourself."
+        self.usage = "```eval 2 + 2 + 3```"
 
 class CalculatorTool(AgentTool):
     """
@@ -236,15 +250,15 @@ class CalculatorTool(AgentTool):
         """
         Initialize the calculator tool.
         """
-        self.command = "/calculate"
+        self.command = "calculate"
         self.description = "Evaluates the result of mathematical expressions."
         self.description += " If you want to add, subtract, multiply, or divide numbers, use this command."
         self.description += "instead of trying to do it yourself. Place this command at the last line of your output."
         self.description += "Do not attempt to calculate the expression yourself."
-        self.usage = "Adding numbers: /calculate 2 + 2 + 3"
-        self.usage += "Subtracting numbers: /calculate 2 - 2 - 3"
-        self.usage += "Multiplying numbers: /calculate 2 * 2 * 3"
-        self.usage += "Dividing numbers: /calculate 2 / 2 / 3"
+        self.usage = "Adding numbers: ```calculate 2 + 2 + 3```"
+        self.usage += "Subtracting numbers: ```calculate 2 - 2 - 3```"
+        self.usage += "Multiplying numbers: ```calculate 2 * 2 * 3```"
+        self.usage += "Dividing numbers: ```calculate 2 / 2 / 3```"
 
     def run(self, tool_input: str) -> str:
         """

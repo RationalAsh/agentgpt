@@ -100,6 +100,7 @@ class BabyAGI(Agent):
         self.objective = objective
         self.task_description = task_description
         self.task_list = task_list
+        self.tools = [PythonEvalTool]
 
     def execute_task(self, task: str) -> str:
         """
@@ -124,7 +125,7 @@ class BabyAGI(Agent):
         
         Think through this step by step. Show your thinking process first
         under a heading called "Thinking Process". If you need the output from a tool,
-        use the appropriate tool commands and place it under the heading "Actions" and wait 
+        use the appropriate tool command and place it under the heading "Action:" and wait 
         for a reply. Do not output anything else until you get a reply.
         """
 
